@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Venkatesh A — Cloud Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..60,300;12..60,400;12..60,500;12..60,600;12..60,700;12..60,800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#080b10; --bg2:#0d1117; --card:#0f1923;
+  --lime:#b8ff57; --lime2:#8fcc3a; --amber:#ffb830;
+  --red:#ff4d6d; --blue:#5ea9ff; --teal:#00d9b0;
+  --text:#e8edf3; --muted:#3d4f63; --muted2:#5c7080;
+  --border:rgba(184,255,87,0.08); --border2:rgba(255,255,255,0.05);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Bricolage Grotesque',sans-serif;overflow-x:hidden;cursor:none;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--lime);border-radius:2px;}
+#cursor{position:fixed;width:8px;height:8px;background:var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .2s,height .2s;}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(184,255,87,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .08s ease,top .08s ease,width .3s,height .3s,border-color .3s;}
+#loader{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.loader-code{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted2);letter-spacing:2px;text-align:center;line-height:2;}
+.loader-code span{color:var(--lime);}
+.loader-bar-outer{width:280px;height:1px;background:rgba(255,255,255,.06);}
+.loader-bar-inner{height:100%;width:0;background:var(--lime);box-shadow:0 0 12px var(--lime);transition:width .1s linear;}
+.loader-pct{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:0 3rem;display:flex;align-items:center;justify-content:space-between;height:64px;transition:background .4s,border-color .4s;}
+nav.scrolled{background:rgba(8,11,16,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:var(--lime);text-decoration:none;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;align-items:center;}
+.nav-links a{color:var(--muted2);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:1px;transition:color .3s;}
+.nav-links a:hover{color:var(--lime);}
+.nav-hire{background:var(--lime)!important;color:#000!important;padding:8px 20px;border-radius:4px;font-weight:700!important;letter-spacing:2px!important;}
+.nav-hire:hover{background:var(--lime2)!important;}
+section{position:relative;z-index:1;}
+.wrap{max-width:1160px;margin:0 auto;padding:7rem 2.5rem;}
+.sec-tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:4px;color:var(--lime);margin-bottom:.8rem;}
+.sec-tag::before{content:'';display:inline-block;width:20px;height:1px;background:var(--lime);}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,5vw,4.5rem);color:#fff;line-height:.95;letter-spacing:2px;margin-bottom:4rem;}
+.sec-title em{color:var(--lime);font-style:normal;}
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;align-items:center;gap:4rem;max-width:1160px;margin:0 auto;padding:80px 2.5rem 2.5rem;position:relative;z-index:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;background:rgba(184,255,87,.06);border:1px solid rgba(184,255,87,.2);color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:3px;padding:7px 18px;border-radius:2px;margin-bottom:2rem;animation:fadeUp .6s ease both;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80;animation:pulse 2s infinite;}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,10vw,8.5rem);line-height:.88;letter-spacing:3px;color:#fff;margin-bottom:.4rem;animation:fadeUp .6s .1s ease both;}
+.hero-name .accent{color:var(--lime);}
+.hero-role{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--amber);letter-spacing:2px;margin-bottom:1.8rem;animation:fadeUp .6s .2s ease both;min-height:1.4em;}
+#tw{border-right:2px solid var(--amber);}
+.hero-desc{font-size:1rem;color:var(--muted2);line-height:1.9;max-width:520px;margin-bottom:2.5rem;animation:fadeUp .6s .3s ease both;font-weight:300;}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp .6s .4s ease both;}
+.btn-primary{background:var(--lime);color:#000;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:2px;padding:14px 30px;border-radius:3px;text-decoration:none;transition:background .2s,transform .2s,box-shadow .3s;}
+.btn-primary:hover{background:var(--lime2);transform:translateY(-2px);box-shadow:0 12px 30px rgba(184,255,87,.25);}
+.btn-outline{border:1px solid rgba(255,255,255,.12);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:2px;padding:14px 30px;border-radius:3px;text-decoration:none;transition:border-color .2s,color .2s;}
+.btn-outline:hover{border-color:var(--lime);color:var(--lime);}
+.hero-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.8rem;animation:fadeUp .6s .5s ease both;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),var(--teal),var(--blue));}
+.card-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:4px;margin-bottom:1.4rem;}
+.arch{display:flex;flex-direction:column;gap:.7rem;}
+.arch-row{display:flex;align-items:center;gap:.6rem;}
+.abox{flex:1;padding:9px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-align:center;line-height:1.4;transition:transform .2s;border:1px solid;}
+.abox:hover{transform:scale(1.04);}
+.abox sub{font-size:.5rem;color:var(--muted);display:block;}
+.abox.c{background:rgba(184,255,87,.05);border-color:rgba(184,255,87,.2);color:var(--lime);}
+.abox.a{background:rgba(255,184,48,.05);border-color:rgba(255,184,48,.2);color:var(--amber);}
+.abox.b{background:rgba(94,169,255,.05);border-color:rgba(94,169,255,.2);color:var(--blue);}
+.abox.t{background:rgba(0,217,176,.05);border-color:rgba(0,217,176,.2);color:var(--teal);}
+.arr{color:var(--muted);font-size:.75rem;}
+.arch-foot{display:flex;align-items:center;gap:8px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);}
+.arch-foot .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 2s infinite;}
+.arch-foot span:last-child{margin-left:auto;color:#4ade80;}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:3px;animation:bounce 2s infinite;z-index:1;}
+.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--lime),transparent);}
+.stats-ribbon{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2.5rem;position:relative;z-index:1;}
+.stats-inner{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+.stat-item{text-align:center;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--lime);line-height:1;letter-spacing:2px;}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:3px;margin-top:4px;}
+#about{background:var(--bg2);}
+.about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:5rem;align-items:start;}
+.about-text p{color:var(--muted2);line-height:1.95;font-size:.95rem;margin-bottom:1.3rem;font-weight:300;}
+.about-text p strong{color:var(--text);font-weight:600;}
+.chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:2rem;}
+.chip{background:rgba(184,255,87,.05);border:1px solid rgba(184,255,87,.15);color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:5px 14px;border-radius:2px;letter-spacing:1px;}
+.timeline{position:relative;padding-left:1.6rem;}
+.timeline::before{content:'';position:absolute;left:0;top:8px;bottom:0;width:1px;background:linear-gradient(to bottom,var(--lime),var(--teal),transparent);}
+.tl-item{position:relative;margin-bottom:2.2rem;}
+.tl-dot{position:absolute;left:-1.95rem;top:6px;width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);}
+.tl-dot.amber{background:var(--amber);box-shadow:0 0 12px var(--amber);}
+.tl-dot.blue{background:var(--blue);box-shadow:0 0 12px var(--blue);}
+.tl-year{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:2px;margin-bottom:5px;}
+.tl-role{font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.tl-place{font-size:.85rem;color:var(--muted2);font-weight:300;}
+.tl-badge{display:inline-block;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:.58rem;padding:3px 10px;border-radius:2px;margin-top:6px;}
+.tl-badge.yellow{background:rgba(255,184,48,.08);border-color:rgba(255,184,48,.2);color:var(--amber);}
+#projects{background:var(--bg);}
+.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+.proj-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:2.2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s;cursor:default;}
+.proj-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+.proj-card:nth-child(1)::after{background:var(--lime);}
+.proj-card:nth-child(2)::after{background:var(--amber);}
+.proj-card:nth-child(3)::after{background:var(--blue);}
+.proj-card:nth-child(4)::after{background:var(--teal);}
+.proj-card:hover{border-color:rgba(184,255,87,.15);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.proj-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.4rem;}
+.proj-idx{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:2px;}
+.proj-live{font-family:'JetBrains Mono',monospace;font-size:.55rem;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:#4ade80;padding:3px 10px;border-radius:2px;}
+.proj-icon{font-size:2rem;margin-bottom:1rem;}
+.proj-title{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.7rem;}
+.proj-desc{color:var(--muted2);font-size:.88rem;line-height:1.75;margin-bottom:1.4rem;font-weight:300;}
+.proj-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem;}
+.tag{background:rgba(255,255,255,.03);border:1px solid var(--border2);color:#64748b;font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:3px 10px;border-radius:2px;}
+.proj-foot{display:flex;align-items:center;padding-top:1.2rem;border-top:1px solid var(--border2);}
+.proj-link{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--lime);text-decoration:none;transition:letter-spacing .2s;}
+.proj-link:hover{letter-spacing:1px;}
+#skills{background:var(--bg2);}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;}
+.skill-group{margin-bottom:2.8rem;}
+.skill-group-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:4px;color:var(--amber);margin-bottom:1.4rem;}
+.skill-row{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+.skill-name{font-size:.85rem;color:var(--text);width:180px;flex-shrink:0;font-weight:400;}
+.skill-track{flex:1;height:2px;background:rgba(255,255,255,.04);border-radius:1px;overflow:hidden;}
+.skill-fill{height:100%;border-radius:1px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+.sf-lime{background:linear-gradient(90deg,var(--lime),var(--teal));}
+.sf-amber{background:linear-gradient(90deg,var(--amber),var(--red));}
+.sf-blue{background:linear-gradient(90deg,var(--blue),var(--teal));}
+.skill-pct{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);width:32px;text-align:right;}
+.certs-panel{margin-top:0;}
+.cert-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:4px;color:var(--lime);margin-bottom:1.2rem;}
+.cert-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.4rem;margin-bottom:1rem;position:relative;overflow:hidden;transition:border-color .3s;}
+.cert-card:hover{border-color:rgba(255,184,48,.25);}
+.cert-card::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:var(--amber);}
+.cert-name{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.cert-by{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);}
+.cert-badge{display:inline-block;margin-top:8px;background:rgba(255,184,48,.08);border:1px solid rgba(255,184,48,.2);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:.58rem;padding:2px 10px;border-radius:2px;}
+#pipeline{background:var(--bg);}
+.pipeline-track{display:flex;align-items:center;justify-content:center;gap:0;overflow-x:auto;padding-bottom:1rem;margin-top:3rem;}
+.pipe-step{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+.pipe-box{width:100px;height:75px;background:var(--card);border:1px solid var(--border2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .3s,transform .3s,box-shadow .3s;}
+.pipe-box.active{border-color:var(--lime);box-shadow:0 0 25px rgba(184,255,87,.18);transform:translateY(-5px);}
+.pipe-icon{font-size:1.4rem;}
+.pipe-name{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);text-align:center;}
+.pipe-label{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);letter-spacing:1px;}
+.pipe-arr{color:var(--muted);font-size:.9rem;padding:0 6px;flex-shrink:0;transition:color .3s;}
+.pipe-arr.lit{color:var(--lime);}
+#terminal-section{background:var(--bg2);}
+.terminal-outer{max-width:820px;margin:0 auto;}
+.terminal{background:#060c14;border:1px solid rgba(184,255,87,.15);border-radius:14px;overflow:hidden;box-shadow:0 0 100px rgba(184,255,87,.04),0 40px 100px rgba(0,0,0,.6);}
+.term-bar{background:#0a1220;padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.04);}
+.dot{width:11px;height:11px;border-radius:50%;}
+.dot-r{background:#ff5f56;}.dot-y{background:#ffbd2e;}.dot-g{background:#27c93f;}
+.term-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin:0 auto;}
+.term-body{padding:1.5rem 1.8rem;min-height:300px;max-height:380px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:2;}
+.term-body::-webkit-scrollbar{width:3px;}
+.term-body::-webkit-scrollbar-thumb{background:rgba(184,255,87,.2);}
+.t-line{opacity:0;animation:termFade .3s ease forwards;}
+.t-prompt{color:var(--lime);}.t-cmd{color:#fff;}.t-key{color:var(--amber);}.t-val{color:#64748b;}
+.t-green{color:#4ade80;}.t-blue{color:var(--blue);}.t-teal{color:var(--teal);}
+.t-cursor{display:inline-block;width:7px;height:14px;background:var(--lime);vertical-align:middle;animation:blink 1s step-end infinite;}
+.term-btns{display:flex;flex-wrap:wrap;gap:.7rem;padding:1rem 1.8rem 1.6rem;border-top:1px solid rgba(255,255,255,.04);}
+.t-btn{background:rgba(184,255,87,.05);border:1px solid rgba(184,255,87,.18);color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:7px 16px;border-radius:4px;cursor:pointer;transition:background .2s,transform .1s;}
+.t-btn:hover{background:rgba(184,255,87,.12);transform:translateY(-1px);}
+#github-section{background:var(--bg);border-top:1px solid var(--border);}
+.gh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2.5rem;}
+.gh-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:1.8rem;text-align:center;transition:border-color .3s,transform .3s;}
+.gh-card:hover{border-color:rgba(184,255,87,.25);transform:translateY(-3px);}
+.gh-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--lime);letter-spacing:2px;}
+.gh-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:3px;margin-top:4px;}
+.lang-panel{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:2rem;}
+.lang-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:4px;color:var(--teal);margin-bottom:1.5rem;}
+.lang-row{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem;}
+.lang-name{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text);width:90px;text-align:right;}
+.lang-track{flex:1;height:2px;background:rgba(255,255,255,.04);border-radius:1px;overflow:hidden;}
+.lang-fill{height:100%;border-radius:1px;transition:width 1.5s ease;width:0;}
+.lang-pct{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);width:32px;}
+#contact{background:var(--bg2);}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;}
+.contact-intro{color:var(--muted2);line-height:1.9;font-size:.95rem;margin-bottom:2.5rem;font-weight:300;}
+.c-links{display:flex;flex-direction:column;gap:1rem;}
+.c-link{display:flex;align-items:center;gap:1rem;text-decoration:none;color:var(--text);font-size:.9rem;padding:.8rem 1rem;border:1px solid transparent;border-radius:6px;transition:border-color .3s,color .3s;}
+.c-link:hover{color:var(--lime);border-color:rgba(184,255,87,.15);}
+.c-icon{width:44px;height:44px;background:var(--card);border:1px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--lime);flex-shrink:0;transition:border-color .3s;}
+.c-link:hover .c-icon{border-color:var(--lime);}
+.contact-form{display:flex;flex-direction:column;gap:1.2rem;}
+.f-group{display:flex;flex-direction:column;gap:6px;}
+.f-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:3px;}
+.f-input,.f-textarea{background:var(--card);border:1px solid var(--border2);color:var(--text);padding:12px 16px;border-radius:6px;font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s;resize:none;}
+.f-input:focus,.f-textarea:focus{border-color:var(--lime);}
+.f-textarea{height:120px;}
+.f-status{font-family:'JetBrains Mono',monospace;font-size:.68rem;min-height:20px;}
+.f-submit{background:var(--lime);color:#000;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:3px;padding:14px;border-radius:4px;border:none;cursor:pointer;transition:background .2s,transform .2s;}
+.f-submit:hover{background:var(--lime2);transform:translateY(-2px);}
+.f-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+footer{background:var(--bg);border-top:1px solid var(--border);padding:2.5rem;position:relative;z-index:1;}
+.footer-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--lime);letter-spacing:4px;}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+.footer-copy span{color:var(--lime);}
+.footer-links{display:flex;gap:2rem;}
+.footer-links a{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);text-decoration:none;transition:color .3s;}
+.footer-links a:hover{color:var(--lime);}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal-l{opacity:0;transform:translateX(-30px);transition:opacity .7s ease,transform .7s ease;}
+.reveal-r{opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.vis,.reveal-l.vis,.reveal-r.vis{opacity:1;transform:translate(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(8px);}}
+@keyframes blink{50%{opacity:0;}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4);}70%{box-shadow:0 0 0 6px rgba(74,222,128,0);}}
+@keyframes termFade{from{opacity:0;transform:translateX(-4px);}to{opacity:1;transform:translateX(0);}}
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr;padding:80px 1.5rem 2rem;}
+  .hero-card{display:none;}
+  .hero-name{font-size:4.5rem;}
+  .about-grid,.contact-grid,.skills-grid{grid-template-columns:1fr;gap:3rem;}
+  .proj-grid,.gh-grid{grid-template-columns:1fr;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+  .pipeline-track{justify-content:flex-start;}
+  nav{padding:0 1.5rem;}
+  .nav-links li:not(:last-child){display:none;}
+  .footer-inner{flex-direction:column;gap:1rem;text-align:center;}
+  .wrap{padding:5rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-code"><span>VENKATESH A</span><br>Cloud Engineer Portfolio</div>
+  <div class="loader-bar-outer"><div class="loader-bar-inner" id="lbar"></div></div>
+  <div class="loader-pct" id="lpct">0%</div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<nav id="navbar">
+  <a class="nav-logo" href="#">VA_</a>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#pipeline">devops</a></li>
+    <li><a href="#terminal-section">terminal</a></li>
+    <li><a href="#contact" class="nav-hire">HIRE ME</a></li>
+  </ul>
+</nav>
+
+<section style="position:relative;z-index:1;">
+  <div id="hero">
+    <div>
+      <div class="hero-eyebrow"><span class="pulse-dot"></span>AVAILABLE FOR HIRE</div>
+      <h1 class="hero-name">VENKATESH<br><span class="accent">A.</span></h1>
+      <p class="hero-role"><span id="tw"></span></p>
+      <p class="hero-desc">Motivated Cloud Engineer building secure, scalable infrastructure on AWS. Passionate about automation, containers, and making deployment effortless.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">VIEW MY WORK</a>
+        <a href="https://github.com/venkatesh12a" target="_blank" class="btn-outline">GITHUB PROFILE</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="card-label">// AWS ARCHITECTURE</div>
+      <div class="arch">
+        <div class="arch-row">
+          <div class="abox c">Route 53<sub>DNS</sub></div>
+          <span class="arr">&#8594;</span>
+          <div class="abox a">CloudFront<sub>CDN</sub></div>
+        </div>
+        <div class="arch-row" style="justify-content:center"><span class="arr" style="transform:rotate(90deg)display:block">&#8595;</span></div>
+        <div class="arch-row">
+          <div class="abox b">ALB<sub>Load Balancer</sub></div>
+          <span class="arr">&#8594;</span>
+          <div class="abox t">EC2 ASG<sub>Auto Scale</sub></div>
+        </div>
+        <div class="arch-row" style="justify-content:center"><span class="arr">&#8595;</span></div>
+        <div class="arch-row">
+          <div class="abox c">RDS<sub>MySQL</sub></div>
+          <span class="arr">+</span>
+          <div class="abox a">S3<sub>Storage</sub></div>
+        </div>
+      </div>
+      <div class="arch-foot">
+        <span class="dot"></span>
+        <span>All services</span>
+        <span>99.9% uptime</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><div class="scroll-line"></div></div>
+</section>
+
+<div class="stats-ribbon">
+  <div class="stats-inner">
+    <div class="stat-item reveal"><div class="stat-num" data-count="2">0</div><div class="stat-label">CERTIFICATIONS</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-count="4">0</div><div class="stat-label">PROJECTS BUILT</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-count="8">0</div><div class="stat-label">AWS SERVICES</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-count="77" data-suffix="%">0</div><div class="stat-label">B.SC CGPA &#215;10</div></div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap">
+    <p class="sec-tag reveal">ABOUT ME</p>
+    <h2 class="sec-title reveal">The Person <em>Behind the Code</em></h2>
+    <div class="about-grid">
+      <div class="reveal-l">
+        <div class="about-text">
+          <p>I'm a <strong>Cloud Engineering fresher</strong> currently pursuing my M.Sc. in Computer Science at Hindustan College of Arts &amp; Science. I hold certifications in <strong>AWS Cloud Practitioner (CLF-C02)</strong> and <strong>Cisco CCNA</strong>.</p>
+          <p>My passion lies in building reliable cloud infrastructure, automating deployments, and working with modern DevOps tools. I enjoy turning complex infrastructure challenges into <strong>clean, manageable solutions</strong>.</p>
+          <p>With hands-on exposure to AWS services &#8212; EC2, S3, IAM, RDS, VPC &#8212; plus experience in Docker, Terraform, and CI/CD pipelines, I'm ready to contribute to <strong>real-world cloud teams from day one</strong>.</p>
+        </div>
+        <div class="chips">
+          <span class="chip">AWS CLF-C02</span><span class="chip">Cisco Router &amp; Switch</span>
+          <span class="chip">EIGRP / OSPF</span><span class="chip">IPv4 / IPv6</span>
+          <span class="chip">Docker</span><span class="chip">Linux</span>
+          <span class="chip">Python</span><span class="chip">Terraform</span>
+          <span class="chip">Git / GitHub</span><span class="chip">Network Security</span>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2024 &#8212; PRESENT</div>
+            <div class="tl-role">M.Sc. Computer Science</div>
+            <div class="tl-place">Hindustan College of Arts &amp; Science</div>
+            <div class="tl-badge">CGPA: 7.6 &#8212; Pursuing</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot blue"></div>
+            <div class="tl-year">2021 &#8212; 2024</div>
+            <div class="tl-role">B.Sc. Computer Science</div>
+            <div class="tl-place">Swami Dayananda College</div>
+            <div class="tl-badge">CGPA: 7.7 &#8212; Completed</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot amber"></div>
+            <div class="tl-year">MARCH 2026</div>
+            <div class="tl-role">AWS CLF-C02 2026</div>
+            <div class="tl-place">Udemy &#8212; Stephane Maarek | 14.5 hrs</div>
+            <div class="tl-badge yellow">CERTIFIED</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot amber"></div>
+            <div class="tl-year">AUGUST 2024</div>
+            <div class="tl-role">Networking with Cisco Router &amp; Switch</div>
+            <div class="tl-place">Sansbound Solutions Pvt. Ltd.</div>
+            <div class="tl-badge yellow">CERTIFIED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <p class="sec-tag reveal">PROJECTS</p>
+    <h2 class="sec-title reveal">Things I've <em>Built</em></h2>
+    <div class="proj-grid">
+      <div class="proj-card reveal">
+        <div class="proj-head"><div class="proj-idx">01 / 04</div><div class="proj-live">PUBLIC</div></div>
+        <div class="proj-icon">&#x2601;&#xFE0F;</div>
+        <div class="proj-title">Secure Cloud Storage</div>
+        <div class="proj-desc">Multi-user cloud storage system with end-to-end encryption and distributed nodes. Features granular access control and secure file management.</div>
+        <div class="proj-tags"><span class="tag">Python</span><span class="tag">Cloud</span><span class="tag">Encryption</span></div>
+        <div class="proj-foot"><a href="https://github.com/venkatesh12a" target="_blank" class="proj-link">View on GitHub &#8594;</a></div>
+      </div>
+      <div class="proj-card reveal">
+        <div class="proj-head"><div class="proj-idx">02 / 04</div><div class="proj-live">PUBLIC</div></div>
+        <div class="proj-icon">&#x1F916;</div>
+        <div class="proj-title">AI Event Planner</div>
+        <div class="proj-desc">Flask 3.0 + Python 3.12 app with JWT auth, Google Gemini AI chat, Stability AI image previews, SQLAlchemy DB, and ReportLab PDF invoices.</div>
+        <div class="proj-tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Gemini AI</span><span class="tag">SQLAlchemy</span></div>
+        <div class="proj-foot"><a href="https://github.com/venkatesh12a" target="_blank" class="proj-link">View on GitHub &#8594;</a></div>
+      </div>
+      <div class="proj-card reveal">
+        <div class="proj-head"><div class="proj-idx">03 / 04</div><div class="proj-live">PUBLIC</div></div>
+        <div class="proj-icon">&#x1F695;</div>
+        <div class="proj-title">Online Cab Booking</div>
+        <div class="proj-desc">Full-stack cab booking system where users book rides and admins manage drivers, vehicles, and bookings with real-time updates.</div>
+        <div class="proj-tags"><span class="tag">PHP</span><span class="tag">HTML/CSS</span><span class="tag">JavaScript</span><span class="tag">SQL</span></div>
+        <div class="proj-foot"><a href="https://github.com/venkatesh12a" target="_blank" class="proj-link">View on GitHub &#8594;</a></div>
+      </div>
+      <div class="proj-card reveal">
+        <div class="proj-head"><div class="proj-idx">04 / 04</div><div class="proj-live">PUBLIC</div></div>
+        <div class="proj-icon">&#x1F3AC;</div>
+        <div class="proj-title">Movie Recommender</div>
+        <div class="proj-desc">Node.js web app suggesting personalized film recommendations based on user ratings and preferences, built with Express.js and vanilla JavaScript.</div>
+        <div class="proj-tags"><span class="tag">JavaScript</span><span class="tag">Node.js</span><span class="tag">Express.js</span></div>
+        <div class="proj-foot"><a href="https://github.com/venkatesh12a" target="_blank" class="proj-link">View on GitHub &#8594;</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <p class="sec-tag reveal">SKILLS</p>
+    <h2 class="sec-title reveal">My <em>Toolkit</em></h2>
+    <div class="skills-grid">
+      <div>
+        <div class="skill-group reveal">
+          <div class="skill-group-title">CLOUD &amp; AWS</div>
+          <div class="skill-row"><span class="skill-name">AWS Core (CLF-C02)</span><div class="skill-track"><div class="skill-fill sf-lime" data-w="82"></div></div><span class="skill-pct">82%</span></div>
+          <div class="skill-row"><span class="skill-name">AWS CLI &amp; CloudWatch</span><div class="skill-track"><div class="skill-fill sf-lime" data-w="68"></div></div><span class="skill-pct">68%</span></div>
+          <div class="skill-row"><span class="skill-name">CloudFormation</span><div class="skill-track"><div class="skill-fill sf-lime" data-w="45"></div></div><span class="skill-pct">45%</span></div>
+          <div class="skill-row"><span class="skill-name">Terraform</span><div class="skill-track"><div class="skill-fill sf-lime" data-w="38"></div></div><span class="skill-pct">38%</span></div>
+        </div>
+        <div class="skill-group reveal">
+          <div class="skill-group-title">NETWORKING (CISCO)</div>
+          <div class="skill-row"><span class="skill-name">IPv4 / IPv6 &amp; Routing</span><div class="skill-track"><div class="skill-fill sf-amber" data-w="80"></div></div><span class="skill-pct">80%</span></div>
+          <div class="skill-row"><span class="skill-name">EIGRP &amp; OSPF Protocols</span><div class="skill-track"><div class="skill-fill sf-amber" data-w="75"></div></div><span class="skill-pct">75%</span></div>
+          <div class="skill-row"><span class="skill-name">WAN (PPP/HDLC/Frame)</span><div class="skill-track"><div class="skill-fill sf-amber" data-w="70"></div></div><span class="skill-pct">70%</span></div>
+          <div class="skill-row"><span class="skill-name">Network Security</span><div class="skill-track"><div class="skill-fill sf-amber" data-w="65"></div></div><span class="skill-pct">65%</span></div>
+        </div>
+        <div class="skill-group reveal">
+          <div class="skill-group-title">PROGRAMMING &amp; TOOLS</div>
+          <div class="skill-row"><span class="skill-name">Linux &amp; Shell</span><div class="skill-track"><div class="skill-fill sf-blue" data-w="72"></div></div><span class="skill-pct">72%</span></div>
+          <div class="skill-row"><span class="skill-name">Git &amp; GitHub</span><div class="skill-track"><div class="skill-fill sf-blue" data-w="75"></div></div><span class="skill-pct">75%</span></div>
+          <div class="skill-row"><span class="skill-name">Python</span><div class="skill-track"><div class="skill-fill sf-blue" data-w="45"></div></div><span class="skill-pct">45%</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="certs-panel reveal">
+          <div class="cert-label">CERTIFICATIONS</div>
+          <div class="cert-card">
+            <div class="cert-name">AWS Certified Cloud Practitioner (CLF-C02)</div>
+            <div class="cert-by">Udemy &#8212; Stephane Maarek &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; 14.5 hrs</div>
+            <div class="cert-badge">CERTIFIED</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-name">Networking with Cisco Router &amp; Switch</div>
+            <div class="cert-by">Sansbound Solutions Pvt. Ltd. &nbsp;|&nbsp; August 2024</div>
+            <div class="cert-badge">CERTIFIED</div>
+          </div>
+        </div>
+        <div class="reveal" style="margin-top:2.5rem;">
+          <canvas id="radarCanvas" width="300" height="300" style="max-width:100%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="wrap">
+    <p class="sec-tag reveal">DEVOPS WORKFLOW</p>
+    <h2 class="sec-title reveal">My <em>CI/CD Pipeline</em></h2>
+    <div class="pipeline-track reveal">
+      <div class="pipe-step"><div class="pipe-box active" id="ps1"><div class="pipe-icon">&#x1F4DD;</div><div class="pipe-name">Code</div></div><div class="pipe-label">DEVELOP</div></div>
+      <div class="pipe-arr" id="pa1">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps2"><div class="pipe-icon">&#x1F500;</div><div class="pipe-name">Git Push</div></div><div class="pipe-label">COMMIT</div></div>
+      <div class="pipe-arr" id="pa2">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps3"><div class="pipe-icon">&#x2699;&#xFE0F;</div><div class="pipe-name">CI Build</div></div><div class="pipe-label">BUILD</div></div>
+      <div class="pipe-arr" id="pa3">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps4"><div class="pipe-icon">&#x1F9EA;</div><div class="pipe-name">Test</div></div><div class="pipe-label">TEST</div></div>
+      <div class="pipe-arr" id="pa4">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps5"><div class="pipe-icon">&#x1F433;</div><div class="pipe-name">Docker</div></div><div class="pipe-label">PACKAGE</div></div>
+      <div class="pipe-arr" id="pa5">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps6"><div class="pipe-icon">&#x2601;&#xFE0F;</div><div class="pipe-name">AWS Deploy</div></div><div class="pipe-label">DEPLOY</div></div>
+      <div class="pipe-arr" id="pa6">&#8594;</div>
+      <div class="pipe-step"><div class="pipe-box" id="ps7"><div class="pipe-icon">&#x1F4CA;</div><div class="pipe-name">Monitor</div></div><div class="pipe-label">OBSERVE</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="github-section">
+  <div class="wrap">
+    <p class="sec-tag reveal">GITHUB ACTIVITY</p>
+    <h2 class="sec-title reveal">Code <em>Snapshot</em></h2>
+    <div class="gh-grid">
+      <div class="gh-card reveal"><div class="gh-num">4</div><div class="gh-label">PUBLIC REPOS</div></div>
+      <div class="gh-card reveal"><div class="gh-num">2025</div><div class="gh-label">ACTIVE SINCE</div></div>
+      <div class="gh-card reveal"><div class="gh-num">100%</div><div class="gh-label">PUBLIC PROJECTS</div></div>
+    </div>
+    <div class="lang-panel reveal">
+      <div class="lang-title">LANGUAGE DISTRIBUTION</div>
+      <div class="lang-row"><span class="lang-name">Python</span><div class="lang-track"><div class="lang-fill" data-w="40" style="background:linear-gradient(90deg,#3776ab,#ffd43b);"></div></div><span class="lang-pct">40%</span></div>
+      <div class="lang-row"><span class="lang-name">JavaScript</span><div class="lang-track"><div class="lang-fill" data-w="25" style="background:linear-gradient(90deg,#f7df1e,#e6a817);"></div></div><span class="lang-pct">25%</span></div>
+      <div class="lang-row"><span class="lang-name">PHP</span><div class="lang-track"><div class="lang-fill" data-w="20" style="background:linear-gradient(90deg,#777bb4,#9b9fe8);"></div></div><span class="lang-pct">20%</span></div>
+      <div class="lang-row"><span class="lang-name">HTML/CSS</span><div class="lang-track"><div class="lang-fill" data-w="15" style="background:linear-gradient(90deg,#e34f26,#f16529);"></div></div><span class="lang-pct">15%</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="terminal-section">
+  <div class="wrap">
+    <p class="sec-tag reveal">INTERACTIVE TERMINAL</p>
+    <h2 class="sec-title reveal">Query My Profile <em>Like AWS CLI</em></h2>
+    <div class="terminal-outer reveal">
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          <div class="term-title">venkatesh@cloud-portfolio ~ zsh</div>
+        </div>
+        <div class="term-body" id="termBody">
+          <div class="t-line" style="opacity:1"><span class="t-prompt">venkatesh@cloud:~$</span> <span class="t-cmd">echo "Welcome! Click a command below."</span></div>
+          <div class="t-line" style="opacity:1"><span class="t-teal">Welcome! Click a command below to explore my profile.</span></div>
+          <div class="t-line" style="opacity:1"><span class="t-prompt">venkatesh@cloud:~$</span> <span class="t-cursor"></span></div>
+        </div>
+        <div class="term-btns">
+          <button class="t-btn" onclick="runCmd('whoami')">whoami</button>
+          <button class="t-btn" onclick="runCmd('skills')">list-skills</button>
+          <button class="t-btn" onclick="runCmd('certs')">get-certs</button>
+          <button class="t-btn" onclick="runCmd('projects')">ls projects/</button>
+          <button class="t-btn" onclick="runCmd('contact')">get-contact</button>
+          <button class="t-btn" onclick="runCmd('aws')">aws describe</button>
+          <button class="t-btn" onclick="runCmd('clear')">clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <p class="sec-tag reveal">CONTACT</p>
+    <h2 class="sec-title reveal">Let's <em>Connect</em></h2>
+    <div class="contact-grid">
+      <div class="reveal-l">
+        <p class="contact-intro">I'm actively looking for Cloud Engineer opportunities. Whether you have a job offer, a project idea, or just want to connect &#8212; my inbox is always open!</p>
+        <div class="c-links">
+          <a href="mailto:venkateshayyapan195@gmail.com" class="c-link"><div class="c-icon">@</div><span>venkateshayyapan195@gmail.com</span></a>
+          <a href="tel:+918610000718" class="c-link"><div class="c-icon">#</div><span>+91 8610000718</span></a>
+          <a href="https://github.com/venkatesh12a" target="_blank" class="c-link"><div class="c-icon">GH</div><span>github.com/venkatesh12a</span></a>
+          <div class="c-link" style="cursor:default;"><div class="c-icon">IN</div><span>Kumbakonam, Tamil Nadu</span></div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="contact-form">
+          <div class="f-group"><label class="f-label">YOUR NAME</label><input id="f-name" type="text" class="f-input" placeholder="John Doe"/></div>
+          <div class="f-group"><label class="f-label">YOUR EMAIL</label><input id="f-email" type="email" class="f-input" placeholder="john@company.com"/></div>
+          <div class="f-group"><label class="f-label">MESSAGE</label><textarea id="f-msg" class="f-textarea" placeholder="Hi Venkatesh, I'd like to discuss..."></textarea></div>
+          <div class="f-status" id="formStatus"></div>
+          <!-- To enable the contact form: create a free form at formspree.io and replace YOUR_FORM_ID below -->
+          <button class="f-submit" id="submitBtn" onclick="handleSubmit()">SEND MESSAGE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">VA_</div>
+    <div class="footer-copy">Designed &amp; built by <span>Venkatesh A</span> &#8212; Hosted on <span>GitHub Pages</span></div>
+    <div class="footer-links">
+      <a href="https://github.com/venkatesh12a" target="_blank">GitHub</a>
+      <a href="mailto:venkateshayyapan195@gmail.com">Email</a>
+      <a href="#">Top &#8593;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// LOADER
+let pct=0;
+const lb=document.getElementById('lbar'),lp=document.getElementById('lpct');
+const li=setInterval(()=>{pct+=Math.random()*16;if(pct>=100){pct=100;clearInterval(li);setTimeout(()=>{const l=document.getElementById('loader');l.style.transition='opacity .6s';l.style.opacity='0';setTimeout(()=>l.style.display='none',600);},300);}lb.style.width=pct+'%';lp.textContent=Math.floor(pct)+'%';},80);
+
+// CURSOR
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.t-btn').forEach(el=>{el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(184,255,87,.6)';});el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(184,255,87,.3)';});});
+
+// BG CANVAS
+const cv=document.getElementById('bg-canvas'),cx=cv.getContext('2d');
+let W,H,dots=[];
+function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}rsz();window.addEventListener('resize',rsz);
+for(let i=0;i<70;i++)dots.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*.8+.2,dx:(Math.random()-.5)*.2,dy:(Math.random()-.5)*.2,a:Math.random()*.22+.05});
+function drw(){cx.clearRect(0,0,W,H);dots.forEach((d,i)=>{cx.beginPath();cx.arc(d.x,d.y,d.r,0,Math.PI*2);cx.fillStyle=`rgba(184,255,87,${d.a})`;cx.fill();dots.slice(i+1).forEach(d2=>{const ds=Math.hypot(d.x-d2.x,d.y-d2.y);if(ds<100){cx.beginPath();cx.moveTo(d.x,d.y);cx.lineTo(d2.x,d2.y);cx.strokeStyle=`rgba(184,255,87,${.03*(1-ds/100)})`;cx.lineWidth=.5;cx.stroke();}});d.x+=d.dx;d.y+=d.dy;if(d.x<0||d.x>W)d.dx*=-1;if(d.y<0||d.y>H)d.dy*=-1;});requestAnimationFrame(drw);}
+drw();
+
+// NAVBAR
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+
+// TYPEWRITER
+const roles=['Cloud Engineer','AWS Developer','DevOps Enthusiast','Infrastructure Builder'];
+let ri=0,ci=0,del=false;
+function tw(){const el=document.getElementById('tw'),w=roles[ri];if(!del){el.textContent=w.slice(0,ci+1);ci++;if(ci===w.length){del=true;setTimeout(tw,2000);return;}}else{el.textContent=w.slice(0,ci-1);ci--;if(ci===0){del=false;ri=(ri+1)%roles.length;}}setTimeout(tw,del?55:95);}
+setTimeout(tw,1400);
+
+// REVEAL
+const ro=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');}),{threshold:.1});
+document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach(el=>ro.observe(el));
+
+// SKILL & LANG BARS
+const sbo=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.querySelectorAll('.skill-fill').forEach(b=>b.style.width=b.dataset.w+'%');x.target.querySelectorAll('.lang-fill').forEach(b=>b.style.width=b.dataset.w+'%');}}),{threshold:.2});
+document.querySelectorAll('.skill-group,.lang-panel').forEach(g=>sbo.observe(g));
+
+// COUNT UP
+const co=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){const el=x.target.querySelector('[data-count]');if(!el||el.dataset.counted)return;el.dataset.counted=true;const t=parseInt(el.dataset.count),sf=el.dataset.suffix||'';let c=0;const iv=setInterval(()=>{c=Math.min(c+t/45,t);el.textContent=Math.floor(c)+sf;if(c>=t)clearInterval(iv);},28);}}),{threshold:.5});
+document.querySelectorAll('.stat-item').forEach(el=>co.observe(el));
+
+// RADAR CHART
+function drawRadar(){
+  const c=document.getElementById('radarCanvas'),cx=c.getContext('2d'),W=c.width,H=c.height,cx0=W/2,cy0=H/2,R=W*.36;
+  const labels=['AWS','DevOps','Docker','Linux','Python','Git'],vals=[.78,.62,.55,.72,.45,.75],n=labels.length;
+  cx.clearRect(0,0,W,H);
+  for(let ring=1;ring<=4;ring++){cx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,r=R*ring/4,x=cx0+Math.cos(a)*r,y=cy0+Math.sin(a)*r;i===0?cx.moveTo(x,y):cx.lineTo(x,y);}cx.closePath();cx.strokeStyle='rgba(184,255,87,.07)';cx.lineWidth=1;cx.stroke();}
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;cx.beginPath();cx.moveTo(cx0,cy0);cx.lineTo(cx0+Math.cos(a)*R,cy0+Math.sin(a)*R);cx.strokeStyle='rgba(184,255,87,.08)';cx.lineWidth=1;cx.stroke();}
+  cx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,r=R*vals[i],x=cx0+Math.cos(a)*r,y=cy0+Math.sin(a)*r;i===0?cx.moveTo(x,y):cx.lineTo(x,y);}cx.closePath();cx.fillStyle='rgba(184,255,87,.1)';cx.fill();cx.strokeStyle='rgba(184,255,87,.7)';cx.lineWidth=2;cx.stroke();
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,r=R*vals[i],x=cx0+Math.cos(a)*r,y=cy0+Math.sin(a)*r;cx.beginPath();cx.arc(x,y,4,0,Math.PI*2);cx.fillStyle='#b8ff57';cx.fill();}
+  cx.font='bold 11px JetBrains Mono,monospace';cx.textAlign='center';cx.textBaseline='middle';
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2,x=cx0+Math.cos(a)*(R+24),y=cy0+Math.sin(a)*(R+24);cx.fillStyle='rgba(92,112,128,.9)';cx.fillText(labels[i],x,y);}
+}
+drawRadar();
+
+// PIPELINE ANIMATION
+let ps=1;
+setInterval(()=>{for(let i=1;i<=7;i++){const b=document.getElementById('ps'+i),a=document.getElementById('pa'+i);if(b)b.classList.toggle('active',i===ps);if(a)a.classList.toggle('lit',i===ps);}ps=ps>=7?1:ps+1;},900);
+
+// PROJECT TILT
+document.querySelectorAll('.proj-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,rx=(y/r.height-.5)*5,ry=-(x/r.width-.5)*5;card.style.transform=`translateY(-4px) rotateX(${rx}deg) rotateY(${ry}deg)`;});
+  card.addEventListener('mouseleave',()=>card.style.transform='');
+});
+
+// TERMINAL COMMANDS
+const cmds={
+  whoami:[['t-prompt','venkatesh@cloud:~$','t-cmd','whoami'],['t-teal','','t-val','Venkatesh A \u2014 Cloud Engineer'],['t-key','name:     ','t-val','Venkatesh A'],['t-key','role:     ','t-green','Cloud Engineer (Fresher)'],['t-key','location: ','t-val','Kumbakonam, Tamil Nadu, India'],['t-key','status:   ','t-green','Open to Opportunities \u2713'],['t-key','github:   ','t-val','github.com/venkatesh12a'],['t-key','email:    ','t-val','venkateshayyapan195@gmail.com']],
+  skills:[['t-prompt','venkatesh@cloud:~$','t-cmd','list-skills --all'],['t-teal','[CLOUD]','t-val',''],['t-key','  AWS:    ','t-val','EC2, S3, IAM, RDS, VPC'],['t-key','  IaC:    ','t-val','CloudFormation, Terraform'],['t-teal','[DEVOPS]','t-val',''],['t-key','  Containers:','t-val','Docker, Kubernetes (intro)'],['t-key','  CI/CD:  ','t-val','GitHub Actions, Pipelines'],['t-teal','[TOOLS]','t-val',''],['t-key','  Code:   ','t-val','Python, Shell, JavaScript, PHP'],['t-key','  OS:     ','t-val','Linux (Ubuntu/CentOS)']],
+  certs:[['t-prompt','venkatesh@cloud:~$','t-cmd','get-certs --verify'],['t-green','[PASS]','t-val','AWS Certified Cloud Practitioner CLF-C02'],['t-key','  issuer: ','t-val','Udemy \u2014 Stephane Maarek'],['t-key','  date:   ','t-val','March 2026 | 14.5 hours'],['t-key','  status: ','t-green','VALID \u2713'],['t-green','[PASS]','t-val','Networking with Cisco Router & Switch'],['t-key','  issuer: ','t-val','Sansbound Solutions Pvt. Ltd.'],['t-key','  date:   ','t-val','August 2024'],['t-key','  skills: ','t-val','IPv4/IPv6, EIGRP, OSPF, WAN Security'],['t-key','  status: ','t-green','VALID \u2713']],
+  projects:[['t-prompt','venkatesh@cloud:~$','t-cmd','ls -la projects/'],['t-teal','drwxr-xr-x','t-val','Secure-Cloud-Storage/    [Python]'],['t-teal','drwxr-xr-x','t-val','AI-Event-Planner/        [Flask+AI]'],['t-teal','drwxr-xr-x','t-val','Online-Cab-Booking/      [PHP+SQL]'],['t-teal','drwxr-xr-x','t-val','Movie-Recommender/       [Node.js]'],['t-green','','t-val','github.com/venkatesh12a']],
+  contact:[['t-prompt','venkatesh@cloud:~$','t-cmd','get-contact --json'],['t-val','{','t-val',''],['t-key','  email:  ','t-val','"venkateshayyapan195@gmail.com"'],['t-key','  phone:  ','t-val','"+91 8610000718"'],['t-key','  github: ','t-val','"github.com/venkatesh12a"'],['t-key','  city:   ','t-val','"Kumbakonam, Tamil Nadu"'],['t-key','  open:   ','t-green','"true"'],['t-val','}','t-val','']],
+  aws:[['t-prompt','venkatesh@cloud:~$','t-cmd','aws ec2 describe-profile'],['t-key','Region:   ','t-val','ap-south-1 (Mumbai)'],['t-key','Services: ','t-val','EC2, S3, IAM, RDS, VPC, CloudWatch'],['t-key','CLI:      ','t-green','Configured \u2713'],['t-key','IaC:      ','t-val','CloudFormation, Terraform (learning)'],['t-key','Cert:     ','t-green','Cloud Practitioner CLF-C02']]
+};
+function runCmd(cmd){
+  const body=document.getElementById('termBody');
+  if(cmd==='clear'){body.innerHTML='<div class="t-line" style="opacity:1"><span class="t-prompt">venkatesh@cloud:~$</span> <span class="t-cursor"></span></div>';return;}
+  const curs=body.querySelector('.t-cursor');if(curs)curs.closest('.t-line').remove();
+  (cmds[cmd]||[]).forEach((line,i)=>{setTimeout(()=>{const div=document.createElement('div');div.className='t-line';div.innerHTML='<span class="'+line[0]+'">'+line[1]+'</span> <span class="'+line[2]+'">'+line[3]+'</span>';body.appendChild(div);body.scrollTop=body.scrollHeight;if(i===(cmds[cmd].length-1)){setTimeout(()=>{const end=document.createElement('div');end.className='t-line';end.style.opacity='1';end.innerHTML='<span class="t-prompt">venkatesh@cloud:~$</span> <span class="t-cursor"></span>';body.appendChild(end);body.scrollTop=body.scrollHeight;},120);}},i*110);});
+}
+
+// CONTACT FORM
+// To activate: create a free form at https://formspree.io and replace YOUR_FORM_ID
+async function handleSubmit(){
+  const name=document.getElementById('f-name').value.trim(),email=document.getElementById('f-email').value.trim(),msg=document.getElementById('f-msg').value.trim();
+  const status=document.getElementById('formStatus'),btn=document.getElementById('submitBtn');
+  if(!name||!email||!msg){status.style.color='#f87171';status.textContent='// Please fill in all fields.';return;}
+  btn.textContent='SENDING...';btn.disabled=true;status.style.color='#64748b';status.textContent='// Connecting...';
+  try{
+    const res=await fetch('https://formspree.io/f/myknedek',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({name,email,message:msg})});
+    if(res.ok){status.style.color='#4ade80';status.textContent="// Message delivered! I'll get back to you soon.";btn.textContent='SENT \u2713';btn.style.background='#4ade80';document.getElementById('f-name').value='';document.getElementById('f-email').value='';document.getElementById('f-msg').value='';setTimeout(()=>{btn.textContent='SEND MESSAGE';btn.style.background='';btn.disabled=false;status.textContent='';},4000);}
+    else{throw new Error();}
+  }catch{status.style.color='#f87171';status.textContent='// Failed. Email directly: venkateshayyapan195@gmail.com';btn.textContent='SEND MESSAGE';btn.disabled=false;}
+}
+</script>
+</body>
+</html>
